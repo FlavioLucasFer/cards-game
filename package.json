@@ -6,7 +6,10 @@
     "dev": "node ace serve --watch",
     "build": "node ace build --production",
     "start": "node server.js",
-    "test": "node ace test"
+    "test": "node ace test",
+    "migrate": "node ace migration:run",
+    "rollback": "node ace migration:roolback",
+    "fresh": "node ace migration:fresh"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.8.0",

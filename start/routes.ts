@@ -12,6 +12,13 @@ Route.group(() => {
         match: /^[1-9]+$/,
         cast: id => Number(id),
       });
+    
+    Route
+      .resource('/decks', 'DecksController')
+      .where('id', {
+        match: /^[1-9]+$/,
+        cast: id => Number(id),
+      });
   })
   .prefix('v1');
 })
