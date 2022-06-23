@@ -45,11 +45,11 @@ group('endpoint to create a game', group => {
     res.assertStatus(201);
   });
 
-  test('should return the created game', async ({ client }) => {
+  test('should return the created game', async ({ client, assert }) => {
     const res = await client.post('/games');
     const resBody: Game = res.body();
     const game = await Game.find(resBody.id);
 
-    res.assert?.isNotNull(game);
+    assert.isNotNull(game);
   });
 });
