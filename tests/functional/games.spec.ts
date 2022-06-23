@@ -7,7 +7,7 @@ const { group } = test;
 
 const RESOURCE_ROUTE = 'api/v1/games';
 
-group('endpoint to list all created games', group => {
+group('endpoint to get all created games', group => {
   group.each.setup(async () => {
     await Database.beginGlobalTransaction();
     return () => Database.rollbackGlobalTransaction();
