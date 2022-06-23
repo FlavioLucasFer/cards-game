@@ -3,7 +3,7 @@ import Logger from '@ioc:Adonis/Core/Logger';
 import GamesService from 'App/Services/GamesService';
 
 export default class GamesController {
-  public async index({response}: HttpContextContract) {
+  public async index({ response }: HttpContextContract) {
     try {
       const games = await GamesService.all();
 
@@ -17,7 +17,7 @@ export default class GamesController {
     }
   }
 
-  public async store({response}: HttpContextContract) {
+  public async store({ response }: HttpContextContract) {
     try {
       return response.created(
         await GamesService.create(),
@@ -28,5 +28,19 @@ export default class GamesController {
     }
   }
 
-  public async destroy({}: HttpContextContract) {}
+  public async destroy({ params, response }: HttpContextContract) {
+    const { id } = params;
+
+    try {
+      const success = await GamesService.delete(id);
+
+      if (!success)
+        return response.noContent();
+      
+      return success;
+    } catch (err) {
+      Logger.error(err);
+      return response.internalServerError();
+    }
+  }
 }
