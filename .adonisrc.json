@@ -7,7 +7,9 @@
     "@adonisjs/lucid/build/commands"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
-  "controllers": "App/Controllers",
+  "namespaces": {
+    "httpControllers": "App/Controllers"
+  },
   "aliases": {
     "App": "app",
     "Config": "config",
