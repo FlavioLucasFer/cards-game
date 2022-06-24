@@ -1,4 +1,4 @@
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import Logger from '@ioc:Adonis/Core/Logger';
 import DeckService from 'App/Services/DecksService';
 

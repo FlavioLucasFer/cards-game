@@ -8,7 +8,7 @@
     "start": "node server.js",
     "test": "node ace test",
     "migrate": "node ace migration:run",
-    "rollback": "node ace migration:roolback",
+    "rollback": "node ace migration:rollback",
     "fresh": "node ace migration:fresh"
   },
   "devDependencies": {

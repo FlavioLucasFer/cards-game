@@ -1,6 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import Logger from '@ioc:Adonis/Core/Logger';
+import DeckService from 'App/Services/DecksService';
 import GamesService from 'App/Services/GamesService';
+import AddDeckValidator from 'App/Validators/AddDeckValidator';
 
 export default class GamesController {
   public async index({ response }: HttpContextContract) {
@@ -39,6 +41,35 @@ export default class GamesController {
       
       return success;
     } catch (err) {
+      Logger.error(err);
+      return response.internalServerError();
+    }
+  }
+
+  public async addDeck({ request, params, response }: HttpContextContract) {
+    try {
+      await request.validate(AddDeckValidator);
+    } catch (err: any) {
+      return response.badRequest(err.messages.errors);
+    }
+
+    const { id } = params;
+    const { deck_id: deckId } = request.only(['deck_id']);
+
+    try {
+      const game = await GamesService.find(id);
+      const deck = await DeckService.find(deckId);
+      
+      if (!game || !deck)
+        return response.noContent();
+
+      return await GamesService.addDeck(game, deck);
+    } catch (err: any) {
+      if (err?.type) {
+        if (err.type === 'RESOURCE_ALREADY_IN_USE')
+          return response.badRequest(err);
+      }
+
       Logger.error(err);
       return response.internalServerError();
     }
