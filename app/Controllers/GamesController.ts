@@ -1,6 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import Logger from '@ioc:Adonis/Core/Logger';
-import DeckService from 'App/Services/DecksService';
 import GamesService from 'App/Services/GamesService';
 import AddDeckValidator from 'App/Validators/AddDeckValidator';
 
@@ -34,13 +33,14 @@ export default class GamesController {
     const { id } = params;
 
     try {
-      const success = await GamesService.delete(id);
-
-      if (!success)
-        return response.noContent();
-      
+      await GamesService.delete(id);
       return response.status(200);
     } catch (err) {
+      if (err?.type) {
+        if (err.type === 'RESOURCE_NOT_FOUND')
+          return response.noContent();
+      }
+
       Logger.error(err);
       return response.internalServerError();
     }
@@ -53,20 +53,16 @@ export default class GamesController {
       return response.badRequest(err.messages.errors);
     }
 
-    const { id } = params;
+    const { game_id: gameId } = params;
     const { deck_id: deckId } = request.only(['deck_id']);
 
     try {
-      const game = await GamesService.find(id);
-      const deck = await DeckService.find(deckId);
-      
-      if (!game || !deck)
-        return response.noContent();
-
-      return await GamesService.addDeck(game, deck);
+      return await GamesService.addDeck(gameId, deckId);
     } catch (err: any) {
       if (err?.type) {
-        if (err.type === 'RESOURCE_ALREADY_IN_USE')
+        if (err.type === 'RESOURCE_NOT_FOUND')
+          return response.noContent();
+        else if (err.type === 'RESOURCE_ALREADY_IN_USE')
           return response.badRequest(err);
       }
 

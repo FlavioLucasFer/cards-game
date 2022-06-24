@@ -14,8 +14,8 @@ Route
           .apiOnly();
 
         Route
-          .post('/games/:id/decks', 'GamesController.addDeck')
-          .where('id', Route.matchers.number());
+          .post('/games/:game_id/decks', 'GamesController.addDeck')
+          .where('game_id', Route.matchers.number());
 
         Route
           .resource('games.players', 'PlayersController')

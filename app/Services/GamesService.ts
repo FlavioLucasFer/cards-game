@@ -1,5 +1,5 @@
 import Game, { ID as GAME_ID } from 'App/Models/Game';
-import Deck from 'App/Models/Deck';
+import Deck, { ID as DECK_ID } from 'App/Models/Deck';
 import { resourceAlreadyInUse, resourceNotFound, resourceNotBelongsTo } from 'App/Helpers/expection';
 import Player, { ID as PLAYER_ID } from 'App/Models/Player';
 
@@ -17,11 +17,14 @@ export default class GamesService {
         return game.save();
     }
     
-    public static async delete(id: GAME_ID): Promise<boolean> {
-        const game = await Game.find(id);
-
-        if (!game)
-            return false;
+    public static async delete(id: GAME_ID) {
+        let game: Game;
+        
+        try {
+            game = await Game.findOrFail(id);
+        } catch (err) {
+            throw resourceNotFound();
+        }
 
         try {
             await game.delete();
@@ -31,7 +34,17 @@ export default class GamesService {
         }
     }
 
-    public static addDeck(game: Game, deck: Deck): Promise<Deck> {
+    public static async addDeck(gameId: GAME_ID, deckId: DECK_ID): Promise<Deck> {
+        let game: Game;
+        let deck: Deck;
+
+        try {
+            game = await Game.findOrFail(gameId);
+            deck = await Deck.findOrFail(deckId);
+        } catch (err) {
+            throw resourceNotFound();
+        }
+        
         if (deck.gameId)
             throw resourceAlreadyInUse('Deck already in a game deck');
 
