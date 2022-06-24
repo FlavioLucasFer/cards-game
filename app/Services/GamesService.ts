@@ -281,4 +281,49 @@ export default class GamesService {
             throw err;
         }
     }
+
+    public static async shuffle(gameId: GAME_ID) {
+        try {
+            await Game.findOrFail(gameId);
+        } catch (err) {
+            throw resourceNotFound();
+        }
+
+        const cards: Card[] = await Card
+            .query()
+            .select(['cards.*'])
+            .innerJoin('decks AS dk', 'dk.id', 'cards.deck_id')
+            .innerJoin('games AS g', 'g.id', 'dk.game_id')
+            .where('g.id', gameId)
+            .whereNull('cards.player_id');
+
+        if (cards.length === 0)
+            throw resourceNotFound();
+
+        console.log('cards:', cards);
+        
+
+        const maxIndex = cards.length - 1;
+
+        try {
+            await Database.transaction(async trx => {
+                for (const card of cards) {
+                    const randomNumber = Math.floor(Math.random() * (maxIndex + 1));
+                    const card2 = cards[randomNumber];
+    
+                    const aux = card.index;
+                    card.index = card2.index;
+                    card2.index = aux;
+                    
+                    card.useTransaction(trx);
+                    card2.useTransaction(trx);
+    
+                    await card.save();
+                    await card2.save();
+                }
+            });
+        } catch (err) {
+            throw err;
+        }
+    }
 }

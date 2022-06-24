@@ -126,4 +126,20 @@ export default class GamesController {
       return response.internalServerError();
     }
   }
+
+  public async shuffle({ params, response }: HttpContextContract) {
+    const { game_id: gameId } = params;
+
+    try {
+      return await GamesService.shuffle(gameId);
+    } catch (err) {
+      if (err?.type) {
+        if (err.type === 'RESOURCE_NOT_FOUND')
+          return response.noContent();
+      }
+
+      Logger.error(err);
+      return response.internalServerError();
+    }
+  }
 }

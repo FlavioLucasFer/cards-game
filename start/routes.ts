@@ -39,6 +39,10 @@ Route
         Route
           .get('/games/:game_id/undealt-cards', 'GamesController.getUndealtCardsCount')
           .where('game_id', Route.matchers.number());
+        
+        Route
+          .post('/games/:game_id/shuffle', 'GamesController.shuffle')
+          .where('game_id', Route.matchers.number());
 
         Route
           .get('/players/:id/cards', 'PlayersController.getCards')
