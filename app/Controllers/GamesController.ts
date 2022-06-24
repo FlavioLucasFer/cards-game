@@ -39,7 +39,7 @@ export default class GamesController {
       if (!success)
         return response.noContent();
       
-      return success;
+      return response.status(200);
     } catch (err) {
       Logger.error(err);
       return response.internalServerError();

@@ -77,12 +77,11 @@ group('endpoint to delete a game', group => {
     res.assertStatus(204);
   });
   
-  test('should return true and delete the game from database', async ({ client, assert }) => {
+  test('should delete the game from database', async ({ client, assert }) => {
     await TestUtils.db().seed();
-    const res = await client.delete(`${RESOURCE_ROUTE}/3`);
+    await client.delete(`${RESOURCE_ROUTE}/3`);
     const game: Game | null = await Game.find(3);
 
-    res.assertTextIncludes('true');
     assert.isNull(game);
   });
 });

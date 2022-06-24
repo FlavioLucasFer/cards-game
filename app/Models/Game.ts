@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { BaseModel, beforeCreate, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm';
 import { v4 as uuidv4 } from 'uuid';
 import Deck from './Deck';
+import Player from './Player';
 
 export type ID = number;
 export type UUID = string;
@@ -25,6 +26,9 @@ export default class Game extends BaseModel {
 
   @hasMany(() => Deck)
   public decks: HasMany<typeof Deck>;
+
+  @hasMany(() => Player)
+  public players: HasMany<typeof Player>;
 
   @beforeCreate()
   protected static generateUuid(game: Game) {

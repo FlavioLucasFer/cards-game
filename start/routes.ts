@@ -10,19 +10,23 @@ Route
         
         Route
           .resource('/games', 'GamesController')
+          .where('id', Route.matchers.number())
+          .apiOnly();
+
+        Route
+          .post('/games/:id/decks', 'GamesController.addDeck')
           .where('id', Route.matchers.number());
 
         Route
-          .group(() => {
-            Route
-              .post('/:id/decks', 'GamesController.addDeck');
-          })
-          .prefix('/games')
-          .where('id', Route.matchers.number());
+          .resource('games.players', 'PlayersController')
+          .where('game_id', Route.matchers.number())
+          .where('id', Route.matchers.number())
+          .apiOnly();
         
         Route
           .resource('/decks', 'DecksController')
-          .where('id', Route.matchers.number());
+          .where('id', Route.matchers.number())
+          .apiOnly();
       })
       .prefix('v1');
   })
