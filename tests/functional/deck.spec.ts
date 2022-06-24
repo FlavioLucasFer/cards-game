@@ -1,5 +1,6 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import { test } from '@japa/runner';
+import Card from 'App/Models/Card';
 import Deck from 'App/Models/Deck';
 
 const { group } = test;
@@ -24,5 +25,20 @@ group('endpoint to create a deck', group => {
     const deck = await Deck.find(resBody.id);
 
     assert.isNotNull(deck);
+  });
+  
+  test('should persist 52 different cards to the created deck', async ({ client, assert }) => {
+    const res = await client.post(RESOURCE_ROUTE);
+    const { cards }: { cards: Card[] } = res.body();
+    
+    assert.isArray(cards);
+    assert.lengthOf(cards, 52);
+
+    const check: Card[] = [cards[0]];
+
+    for (let i = 1; i < 52; i++) {
+      assert.isFalse(check.includes(cards[i]));
+      check.push(cards[i]);
+    }
   });
 });
