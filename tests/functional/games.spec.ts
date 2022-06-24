@@ -153,13 +153,4 @@ group('endpoint to add a deck to a game deck', group => {
       message: 'Deck already in a game deck',
     });
   });
-  
-  // test('should return true and delete the game from database', async ({ client, assert }) => {
-  //   await TestUtils.db().seed();
-  //   const res = await client.delete(`${RESOURCE_ROUTE}/3`);
-  //   const game: Game | null = await Game.find(3);
-
-  //   res.assertTextIncludes('true');
-  //   assert.isNull(game);
-  // });
 });
