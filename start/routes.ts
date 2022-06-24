@@ -14,9 +14,10 @@ Route
           .apiOnly();
 
         Route
-          .post('/games/:game_id/decks', 'GamesController.addDeck')
-          .where('game_id', Route.matchers.number());
-
+          .resource('/decks', 'DecksController')
+          .where('id', Route.matchers.number())
+          .apiOnly();
+          
         Route
           .resource('games.players', 'PlayersController')
           .where('game_id', Route.matchers.number())
@@ -24,9 +25,13 @@ Route
           .apiOnly();
         
         Route
-          .resource('/decks', 'DecksController')
-          .where('id', Route.matchers.number())
-          .apiOnly();
+          .post('/games/:game_id/decks', 'GamesController.addDeck')
+          .where('game_id', Route.matchers.number());
+          
+        Route
+          .post('/decks/:deck_id/deal-cards/:player_id', 'DecksController.dealCards')
+          .where('deck_id', Route.matchers.number())
+          .where('player_id', Route.matchers.number());
       })
       .prefix('v1');
   })

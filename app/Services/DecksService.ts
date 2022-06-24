@@ -1,6 +1,8 @@
 import Database from '@ioc:Adonis/Lucid/Database';
-import { CardFace, CardSuit } from 'App/Models/Card';
+import { resourceNotBelongsTo, resourceNotFound } from 'App/Helpers/expection';
+import Card, { CardFace, CardSuit } from 'App/Models/Card';
 import Deck, { ID } from 'App/Models/Deck';
+import Player, { ID as PLAYER_ID } from 'App/Models/Player';
 
 type CreateCard = {
 	deckId: ID,
@@ -38,6 +40,46 @@ export default class DeckService {
 			})
 			.where('id', deck.id)
 			.firstOrFail();
+	}
+
+	public static async dealCards(
+		deckId: ID, 
+		playerId: PLAYER_ID, 
+		quantity: number = 1
+	): Promise<Card[]> {
+		let deck: Deck;
+		let player: Player;
+
+		try {
+			deck = await Deck.findOrFail(deckId);
+			player = await Player.findOrFail(playerId);
+		} catch (err) {
+			throw resourceNotFound();
+		}
+
+		if (player.gameId !== deck.gameId)
+			throw resourceNotBelongsTo('Player and deck must belongs to the same game');
+		
+		try {
+			const cardsToDeal = await Card
+				.query()
+				.where('deck_id', deckId)
+				.whereNull('player_id')
+				.orderBy('index')
+				.limit(quantity);
+
+			await Database.transaction(async trx => {
+				for (const card of cardsToDeal) {
+					card.useTransaction(trx);
+					card.playerId = playerId;
+					await card.save();
+				}
+			});
+
+			return cardsToDeal;
+		} catch (err) {
+			throw err;
+		}
 	}
 
 	private static generateDeckCards(deckId: ID) {

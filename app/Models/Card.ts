@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, column, BelongsTo, hasOne, HasOne, computed } from '@ioc:Adonis/Lucid/Orm'
 import Deck, { ID as DECK_ID } from './Deck';
+import Player, { ID as PLAYER_ID } from './Player';
 
 export enum CardFace {
   King = 13,
@@ -33,6 +34,9 @@ export default class Card extends BaseModel {
   public deckId: DECK_ID;
 
   @column()
+  public playerId: PLAYER_ID | null;
+
+  @column()
   public face: string;
 
   @column()
@@ -49,4 +53,12 @@ export default class Card extends BaseModel {
 
   @belongsTo(() => Deck)
   public deck: BelongsTo<typeof Deck>;
+
+  @hasOne(() => Player)
+  public player: HasOne<typeof Player>;
+
+  @computed()
+  public get dealt(): boolean {
+    return this.playerId !== null;
+  }
 }

@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm';
+import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm';
 import Game, { ID as GAME_ID } from './Game';
+import Card from './Card';
 
 export type ID = number;
 
@@ -22,4 +23,7 @@ export default class Player extends BaseModel {
 
   @belongsTo(() => Game)
   public game: BelongsTo<typeof Game>;
+
+  @hasMany(() => Card)
+  public cards: HasMany<typeof Card>;
 }
