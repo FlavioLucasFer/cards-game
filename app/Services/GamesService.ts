@@ -108,9 +108,12 @@ export default class GamesService {
                 
                 const cards = await PlayerService.getCards(player.id);
                 
-                mutated.hand_value = await cards
-                    .map(card => CardFace[card.face])
-                    .reduce((prev, next) => prev + next);
+                if (cards && cards.length > 0)
+                    mutated.hand_value = await cards
+                        .map(card => CardFace[card.face])
+                        .reduce((prev, next) => prev + next);
+                else
+                    mutated.hand_value = 0;
                     
                 return mutated;
             })
@@ -202,10 +205,8 @@ export default class GamesService {
     }
 
     public static async getUndealtSuitsCount(gameId: GAME_ID): Promise<Object> {
-        let game: Game;
-
         try {
-            game = await Game.findOrFail(gameId);
+            await Game.findOrFail(gameId);
         } catch (err) {
             throw resourceNotFound();
         }
