@@ -34,6 +34,10 @@ Route
           .where('player_id', Route.matchers.number());
 
         Route
+          .get('/decks/:id/undealt-suits', 'DecksController.getUndealtCardsCountBySuit')
+          .where('id', Route.matchers.number());
+
+        Route
           .get('/players/:id/cards', 'PlayersController.getCards')
           .where('id', Route.matchers.number());
       })

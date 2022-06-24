@@ -82,6 +82,52 @@ export default class DeckService {
 		}
 	}
 
+	public static async getUndealtCardsCountBySuit(deckId: ID): Promise<Object> {
+		let deck: Deck;
+
+		try {
+			deck = await Deck.findOrFail(deckId);
+		} catch (err) {
+			throw resourceNotFound();
+		}
+
+		
+		const cards: Card[] = await deck
+			.related('cards')
+			.query();
+
+		const suits = {
+			hearts: 0,
+			spades: 0,
+			clubs: 0,
+			diamonds: 0,
+		}
+
+		cards.forEach(card => {
+			if (card.dealt)
+				return;
+
+			switch (card.suit) {
+				case 'Hearts':
+					suits.hearts++;
+					break;
+				case 'Spades':
+					suits.spades++;
+					break;
+				case 'Clubs':
+					suits.clubs++;
+					break;
+				case 'Diamonds':
+					suits.diamonds++;
+					break;
+				default:
+					break;
+			}
+		});
+
+		return suits;
+	}
+
 	private static generateDeckCards(deckId: ID) {
 		const cards: CreateCard[] = [];
 		const faces = Object.keys(CardFace).filter(key => !isNaN(Number(CardFace[key])));

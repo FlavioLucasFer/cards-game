@@ -43,5 +43,21 @@ export default class DecksController {
     }
   }
 
+  public async getUndealtCardsCountBySuit({ params, response }: HttpContextContract) {
+    const { id } = params;
+    
+    try {
+      return await DeckService.getUndealtCardsCountBySuit(id);
+    } catch (err) {
+      if (err?.type) {
+        if (err.type === 'RESOURCE_NOT_FOUND')
+          return response.noContent();
+      }
+
+      Logger.error(err);
+      return response.internalServerError();
+    }
+  }
+
   public async destroy({}: HttpContextContract) {}
 }
