@@ -20,12 +20,6 @@ group('endpoint to get all created games', group => {
     res.assertStatus(200);
   });
 
-  test('should return a 204 status', async ({ client }) => {
-    const res = await client.get(RESOURCE_ROUTE);
-
-    res.assertStatus(204);
-  });
-
   test('should return an array of games containing 10 games', async ({ client, assert }) => {
     await TestUtils.db().seed();
     const res = await client.get(RESOURCE_ROUTE);
@@ -102,7 +96,6 @@ group('endpoint to add a deck to a game deck', group => {
 
     res.assertStatus(200);
     res.assertBodyContains({
-      game: Object,
       deck: Object,
     });
   });

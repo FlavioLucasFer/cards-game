@@ -6,12 +6,7 @@ import AddDeckValidator from 'App/Validators/AddDeckValidator';
 export default class GamesController {
   public async index({ response }: HttpContextContract) {
     try {
-      const games = await GamesService.all();
-
-      if (games.length == 0)
-        return response.noContent();
-      
-      return games;
+      return await GamesService.all();
     } catch (err) {
       Logger.error(err);
       return response.internalServerError();
