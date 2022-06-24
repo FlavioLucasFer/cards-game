@@ -3,7 +3,7 @@
 ## About the project
 
 <p>
-    This a RESTful API built-in with [AdonisJs]([AdonisJs](https://adonisjs.com/)) v5.8.0 in TypeScript environment. This is an API of a Cards Game. This project was developed as a homework assignment  for a job opportunity.
+    This a RESTful API built-in with [AdonisJs](https://adonisjs.com/) v5.8.0 in TypeScript environment. This is an API of a Cards Game. This project was developed as a homework assignment  for a job opportunity.
 </p>
 
 # Running the app
