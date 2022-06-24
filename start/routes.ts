@@ -32,6 +32,10 @@ Route
           .post('/decks/:deck_id/deal-cards/:player_id', 'DecksController.dealCards')
           .where('deck_id', Route.matchers.number())
           .where('player_id', Route.matchers.number());
+
+        Route
+          .get('/players/:id/cards', 'PlayersController.getCards')
+          .where('id', Route.matchers.number());
       })
       .prefix('v1');
   })

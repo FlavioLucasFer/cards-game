@@ -29,9 +29,7 @@ export default class DecksController {
     const { quantity } = request.only(['quantity']);
 
     try {
-      return response.ok(
-        await DeckService.dealCards(deckId, playerId, quantity || 1),
-      );
+      return await DeckService.dealCards(deckId, playerId, quantity || 1);
     } catch (err) {
       if (err?.type) {
         if (err.type === 'RESOURCE_NOT_FOUND')

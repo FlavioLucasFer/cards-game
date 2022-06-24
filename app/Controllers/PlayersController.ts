@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import Logger from '@ioc:Adonis/Core/Logger';
 import GamesService from 'App/Services/GamesService';
+import PlayerService from 'App/Services/PlayerService';
 import AddPlayerValidator from 'App/Validators/AddPlayerValidator';
 
 export default class PlayersController {
@@ -59,6 +60,22 @@ export default class PlayersController {
           return response.noContent();
         else if (err.type === 'RESOURCE_NOT_BELONGS_TO')
           return response.badRequest(err);
+      }
+
+      Logger.error(err);
+      return response.internalServerError();
+    }
+  }
+
+  public async getCards({ params, response }: HttpContextContract) {
+    const { id } = params;
+
+    try {
+      return await PlayerService.getCards(id);
+    } catch (err) {
+      if (err?.type) {
+        if (err.type === 'RESOURCE_NOT_FOUND')
+          return response.noContent();
       }
 
       Logger.error(err);
