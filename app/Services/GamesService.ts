@@ -220,19 +220,65 @@ export default class GamesService {
                 ), 0) AS ${suit.toLowerCase()}
             `);
 
-        const suits: Card[] = await Card
-            .query()
-            .select([
-                suitCounterQuery('Hearts'),
-                suitCounterQuery('Spades'),
-                suitCounterQuery('Clubs'),
-                suitCounterQuery('Diamonds'),
-            ])
-            .innerJoin('decks AS dk', 'dk.id', 'cards.deck_id')
-            .innerJoin('games AS g', 'g.id', 'dk.game_id')
-            .where('g.id', gameId)
-            .whereNull('cards.player_id');
-        
-        return suits[0].$extras;
+        try {
+            const suits: Card[] = await Card
+                .query()
+                .select([
+                    suitCounterQuery('Hearts'),
+                    suitCounterQuery('Spades'),
+                    suitCounterQuery('Clubs'),
+                    suitCounterQuery('Diamonds'),
+                ])
+                .innerJoin('decks AS dk', 'dk.id', 'cards.deck_id')
+                .innerJoin('games AS g', 'g.id', 'dk.game_id')
+                .where('g.id', gameId)
+                .whereNull('cards.player_id');
+            
+            return suits[0].$extras;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    public static async getUndealtCardsCount(gameId: GAME_ID) {
+        try {
+            await Game.findOrFail(gameId);
+        } catch (err) {
+            throw resourceNotFound();
+        }
+
+        try {
+            return await Database
+                .from('cards AS c')
+                .select([
+                    'c.face',
+                    'c.suit',
+                    'c.face_value',
+                    Database.raw(`(
+                        SELECT 
+                            COUNT(*)
+                        FROM cards
+                        WHERE cards.suit = c.suit
+                            AND cards.face = c.face
+                            AND cards.player_id IS NULL
+                    ) AS remaining`),
+                ])
+                .innerJoin('decks AS dk', 'dk.id', 'c.deck_id')
+                .innerJoin('games AS g', 'g.id', 'dk.game_id')
+                .where('g.id', gameId)
+                .groupBy('c.face')
+                .groupBy('c.suit')
+                .orderByRaw(`
+                    CASE c.suit
+                        WHEN 'Hearts'   THEN 1
+                        WHEN 'Spades'   THEN 2
+                        WHEN 'Clubs'    THEN 3
+                        WHEN 'Diamonds' THEN 4
+                    END
+                `)
+                .orderBy('c.face_value', 'desc');
+        } catch (err) {
+            throw err;
+        }
     }
 }
