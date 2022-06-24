@@ -1,6 +1,7 @@
 import TestUtils from '@ioc:Adonis/Core/TestUtils';
 import Database from '@ioc:Adonis/Lucid/Database';
 import { test } from '@japa/runner';
+import Card from 'App/Models/Card';
 import Game from 'App/Models/Game';
 
 const { group } = test;
@@ -86,18 +87,27 @@ group('endpoint to add a deck to a game deck', group => {
     return () => Database.rollbackGlobalTransaction();
   });
 
-  test('should return a 200 status and a object containing game and deck', async ({ client }) => {
-    await TestUtils.db().seed();
+  test('should persist 52 different cards to the created deck', async ({ client, assert }) => {
+    await TestUtils.db().seed()
+    await client
+      .post(`${RESOURCE_ROUTE}/decks`);
     const res = await client
       .post(`${RESOURCE_ROUTE}/1/decks`)
       .json({
         deck_id: 1,
       });
+      
+    const { cards }: { cards: Card[] } = res.body();
 
-    res.assertStatus(200);
-    res.assertBodyContains({
-      deck: Object,
-    });
+    assert.isArray(cards);
+    assert.lengthOf(cards, 52);
+
+    const check: Card[] = [cards[0]];
+
+    for (let i = 1; i < 52; i++) {
+      assert.isFalse(check.includes(cards[i]));
+      check.push(cards[i]);
+    }
   });
   
   test('should return a 204 status', async ({ client }) => {

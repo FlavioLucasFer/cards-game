@@ -1,25 +1,30 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema';
 
 export default class extends BaseSchema {
-  protected tableName = 'decks';
+  protected tableName = 'cards';
 
   public async up () {
     this.schema.alterTable(this.tableName, (table) => {
       table
-        .integer('game_id')
+        .integer('index')
         .unsigned()
-        .nullable();
+        .notNullable()
+        .alter();
       table
-        .foreign('game_id')
-        .references('games.id')
-        .onDelete('CASCADE');
+        .tinyint('face_value', 13)
+        .unsigned()
+        .notNullable();
     })
   }
 
   public async down () {
     this.schema.alterTable(this.tableName, (table) => {
-      table.dropForeign('game_id');
-      table.dropColumn('game_id');
+      table
+        .tinyint('index', 52)
+        .unsigned()
+        .notNullable()
+        .alter();
+      table.dropColumn('face_value');
     })
   }
 }

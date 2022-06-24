@@ -29,13 +29,12 @@ Route
           .where('game_id', Route.matchers.number());
           
         Route
-          .post('/decks/:deck_id/deal-cards/:player_id', 'DecksController.dealCards')
-          .where('deck_id', Route.matchers.number())
-          .where('player_id', Route.matchers.number());
+          .post('/games/:game_id/deal-cards', 'GamesController.dealCards')
+          .where('game_id', Route.matchers.number());
 
         Route
-          .get('/decks/:id/undealt-suits', 'DecksController.getUndealtCardsCountBySuit')
-          .where('id', Route.matchers.number());
+          .get('/games/:game_id/undealt-suits', 'GamesController.getUndealtSuitsCount')
+          .where('game_id', Route.matchers.number());
 
         Route
           .get('/players/:id/cards', 'PlayersController.getCards')

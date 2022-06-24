@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 import { 
   BaseModel, 
-  beforeUpdate, 
   BelongsTo, 
   belongsTo, 
   column, 
@@ -32,22 +31,4 @@ export default class Deck extends BaseModel {
 
   @hasMany(() => Card)
   public cards: HasMany<typeof Card>;
-
-  @beforeUpdate()
-  protected static async setGameId(deck: Deck) {
-    const dirtyGameId = deck.$dirty.gameId;
-    const originalGameId = deck.$original.gameId;
-
-    if (!dirtyGameId || originalGameId) {
-      deck.gameId = originalGameId;
-      return;
-    }
-    
-    const game = await Game.find(dirtyGameId);
-
-    if (!game) {
-      deck.gameId = originalGameId;
-      return;
-    }
-  } 
 }

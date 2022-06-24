@@ -1,5 +1,15 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column, BelongsTo, hasOne, HasOne, computed } from '@ioc:Adonis/Lucid/Orm'
+import { 
+  BaseModel, 
+  belongsTo, 
+  column, 
+  BelongsTo, 
+  hasOne, 
+  HasOne, 
+  computed, 
+  beforeUpdate, 
+  beforeCreate, 
+} from '@ioc:Adonis/Lucid/Orm'
 import Deck, { ID as DECK_ID } from './Deck';
 import Player, { ID as PLAYER_ID } from './Player';
 
@@ -40,6 +50,9 @@ export default class Card extends BaseModel {
   public face: string;
 
   @column()
+  public face_value: number;
+
+  @column()
   public suit: string;
 
   @column()
@@ -60,5 +73,12 @@ export default class Card extends BaseModel {
   @computed()
   public get dealt(): boolean {
     return this.playerId !== null;
+  }
+
+  @beforeCreate()
+  @beforeUpdate()
+  protected static async setFaceValue(card: Card) {
+    if (!card.face_value)
+      card.face_value = CardFace[card.face];
   }
 }
