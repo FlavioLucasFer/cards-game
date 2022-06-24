@@ -1,0 +1,376 @@
+{
+	"info": {
+		"_postman_id": "cc724664-cd49-490c-8638-9d40b7b45e6e",
+		"name": "Cards Game",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15927537"
+	},
+	"item": [
+		{
+			"name": "Games Resource",
+			"item": [
+				{
+					"name": "Players",
+					"item": [
+						{
+							"name": "Add player",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const { id } = JSON.parse(responseBody);",
+											"pm.environment.set(\"player_id\", id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nickname\": \"Test player 2\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/players",
+									"host": [
+										"{{API_ENDPOINT}}"
+									],
+									"path": [
+										"games",
+										"{{game_id}}",
+										"players"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get players",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/players",
+									"host": [
+										"{{API_ENDPOINT}}"
+									],
+									"path": [
+										"games",
+										"{{game_id}}",
+										"players"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove player",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/players/{{player_id}}",
+									"host": [
+										"{{API_ENDPOINT}}"
+									],
+									"path": [
+										"games",
+										"{{game_id}}",
+										"players",
+										"{{player_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Game deck",
+					"item": [
+						{
+							"name": "Add deck",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"deck_id\": {{deck_id}}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/decks",
+									"host": [
+										"{{API_ENDPOINT}}"
+									],
+									"path": [
+										"games",
+										"{{game_id}}",
+										"decks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deal cards to a player",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"player_id\": {{player_id}},\n    \"quantity\": 1 // optional, if not informed 1 card will be dealt\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/deal-cards",
+									"host": [
+										"{{API_ENDPOINT}}"
+									],
+									"path": [
+										"games",
+										"{{game_id}}",
+										"deal-cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get undealt suits count",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/undealt-suits",
+									"host": [
+										"{{API_ENDPOINT}}"
+									],
+									"path": [
+										"games",
+										"{{game_id}}",
+										"undealt-suits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get undealt cards count",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/undealt-cards",
+									"host": [
+										"{{API_ENDPOINT}}"
+									],
+									"path": [
+										"games",
+										"{{game_id}}",
+										"undealt-cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Shuffle a game deck",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/shuffle",
+									"host": [
+										"{{API_ENDPOINT}}"
+									],
+									"path": [
+										"games",
+										"{{game_id}}",
+										"shuffle"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const { id } = JSON.parse(responseBody);",
+									"pm.environment.set(\"game_id\", id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{API_ENDPOINT}}/games",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"games"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ENDPOINT}}/games",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"games"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Destroy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_ENDPOINT}}/games/{{game_id}}",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"games",
+								"{{game_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Decks Resource",
+			"item": [
+				{
+					"name": "Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const { id } = JSON.parse(responseBody);",
+									"pm.environment.set(\"deck_id\", id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{API_ENDPOINT}}/decks",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"decks"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Players resource",
+			"item": [
+				{
+					"name": "Get cards",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ENDPOINT}}/players/{{player_id}}/cards",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"players",
+								"{{player_id}}",
+								"cards"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_ENDPOINT}}/",
+					"host": [
+						"{{API_ENDPOINT}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
