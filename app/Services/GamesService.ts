@@ -1,7 +1,9 @@
-import Game, { ID as GAME_ID } from 'App/Models/Game';
-import Deck, { ID as DECK_ID } from 'App/Models/Deck';
 import { resourceAlreadyInUse, resourceNotFound, resourceNotBelongsTo } from 'App/Helpers/expection';
 import Player, { ID as PLAYER_ID } from 'App/Models/Player';
+import Game, { ID as GAME_ID } from 'App/Models/Game';
+import Deck, { ID as DECK_ID } from 'App/Models/Deck';
+import PlayerService from './PlayerService';
+import { CardFace } from 'App/Models/Card';
 
 export default class GamesService {
     public static all(): Promise<Game[]> {
@@ -53,16 +55,40 @@ export default class GamesService {
         return deck.save();
     }
 
-    public static async allPlayers(gameId: GAME_ID): Promise<Player[]> {
+    public static async allPlayers(gameId: GAME_ID) {
+        let game: Game;
+
         try {
-            return (
-                    await Game.findOrFail(gameId)
-                )
-                .related('players')
-                .query();
+            game = await Game.findOrFail(gameId);
         } catch (err) {
             throw resourceNotFound();
         }
+
+        const players: Player[] = await game
+            .related('players')
+            .query();
+
+        const mutatedPlayers = await Promise.all(
+            players.map(async player => {
+                const mutated = {
+                    ...player.toJSON(),
+                    hand_value: 0,
+                };
+                
+                const cards = await PlayerService.getCards(player.id);
+                
+                mutated.hand_value = await cards
+                    .map(card => CardFace[card.face])
+                    .reduce((prev, next) => prev + next);
+                    
+                return mutated;
+            })
+            ,
+        );
+
+        mutatedPlayers.sort((a, b) => b.hand_value - a.hand_value);
+
+        return mutatedPlayers;
     }
 
     public static async addPlayer(gameId: GAME_ID, nickname: string): Promise<Player> {
