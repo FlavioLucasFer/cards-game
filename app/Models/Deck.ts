@@ -1,7 +1,16 @@
 import { DateTime } from 'luxon';
-import { BaseModel, beforeUpdate, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm';
+import { 
+  BaseModel, 
+  beforeUpdate, 
+  BelongsTo, 
+  belongsTo, 
+  column, 
+  HasMany, 
+  hasMany, 
+} from '@ioc:Adonis/Lucid/Orm';
 import type { ID as GAME_ID } from './Game';
 import Game from './Game';
+import Card from './Card';
 
 export type ID = number;
 
@@ -9,8 +18,8 @@ export default class Deck extends BaseModel {
   @column({ isPrimary: true })
   readonly id: number;
 
-  @column({ columnName: 'game_id' })
-  private _gameId: GAME_ID | null;
+  @column()
+  public gameId: GAME_ID | null;
 
   @column.dateTime({ autoCreate: true })
   readonly createdAt: DateTime;
@@ -21,28 +30,23 @@ export default class Deck extends BaseModel {
   @belongsTo(() => Game)
   public game: BelongsTo<typeof Game>;
 
-  public get gameId(): GAME_ID | null {
-    return this._gameId;
-  }
-
-  public set gameId(gameId: GAME_ID | null) {
-    this._gameId = gameId;
-  }
+  @hasMany(() => Card)
+  public cards: HasMany<typeof Card>;
 
   @beforeUpdate()
   protected static async setGameId(deck: Deck) {
-    const dirtyGameId = deck.$dirty._gameId;
-    const originalGameId = deck.$original._gameId;
+    const dirtyGameId = deck.$dirty.gameId;
+    const originalGameId = deck.$original.gameId;
 
-    if (!dirtyGameId && originalGameId != null) {
-      deck._gameId = originalGameId;
+    if (!dirtyGameId || originalGameId) {
+      deck.gameId = originalGameId;
       return;
     }
     
     const game = await Game.find(dirtyGameId);
 
     if (!game) {
-      deck._gameId = originalGameId;
+      deck.gameId = originalGameId;
       return;
     }
   } 
