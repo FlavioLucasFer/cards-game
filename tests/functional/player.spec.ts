@@ -1,7 +1,7 @@
-import TestUtils from '@ioc:Adonis/Core/TestUtils';
 import Database from '@ioc:Adonis/Lucid/Database';
 import { test } from '@japa/runner';
 import Player from 'App/Models/Player';
+import GamesService from 'App/Services/GamesService';
 
 const { group } = test;
 
@@ -14,8 +14,9 @@ group('endpoint to get all the players from a game', group => {
   });
 
   test('should return a 200 status and return an array of players', async ({ client, assert }) => {
-    await TestUtils.db().seed();
-    const res = await client.get(`${RESOURCE_ROUTE}/1/players`);
+    const game = await GamesService.create();
+
+    const res = await client.get(`${RESOURCE_ROUTE}/${game.uuid}/players`);
     const body: Player[] = res.body();
 
     res.assertStatus(200);
@@ -23,8 +24,7 @@ group('endpoint to get all the players from a game', group => {
   });
 
   test('should return a 204 status', async ({ client }) => {
-    await TestUtils.db().seed();
-    const res = await client.get(`${RESOURCE_ROUTE}/23/players`);
+    const res = await client.get(`${RESOURCE_ROUTE}/1b14237a-4b00-468f-b11e-da5fb0c14360/players`);
 
     res.assertStatus(204);
   });
@@ -37,9 +37,10 @@ group('endpoint to add a player to a game', group => {
   });
 
   test('should return a 201 status', async ({ client }) => {
-    await TestUtils.db().seed();
+    const game = await GamesService.create();
+
     const res = await client
-      .post(`${RESOURCE_ROUTE}/1/players`)
+      .post(`${RESOURCE_ROUTE}/${game.uuid}/players`)
       .json({
         nickname: 'test player',
       });
@@ -48,9 +49,8 @@ group('endpoint to add a player to a game', group => {
   });
 
   test('should return a 204 status', async ({ client }) => {
-    await TestUtils.db().seed();
     const res = await client
-      .post(`${RESOURCE_ROUTE}/12/players`)
+      .post(`${RESOURCE_ROUTE}/1b14237a-4b00-468f-b11e-da5fb0c14360/players`)
       .json({
         nickname: 'test player',
       });
@@ -59,9 +59,10 @@ group('endpoint to add a player to a game', group => {
   });
 
   test('should return a 400 status and an array of errors', async ({ client }) => {
-    await TestUtils.db().seed();
+    const game = await GamesService.create();
+
     const res = await client
-      .post(`${RESOURCE_ROUTE}/1/players`);
+      .post(`${RESOURCE_ROUTE}/${game.uuid}/players`);
 
     res.assertStatus(400);
     res.assertBodyContains([{}]);
@@ -75,34 +76,31 @@ group('endpoint to remove a player from a game', group => {
   });
 
   test('should return a 200 status', async ({ client }) => {
-    await TestUtils.db().seed();
-    await client
-      .post(`${RESOURCE_ROUTE}/1/players`)
-      .json({
-        nickname: 'test player',
-      });
-    const res = await client.delete(`${RESOURCE_ROUTE}/1/players/1`);
+    const game = await GamesService.create();
+    const player = await GamesService.addPlayer(game.uuid, 'player test');
+
+    const res = await client.delete(`${RESOURCE_ROUTE}/${game.uuid}/players/${player.id}`);
 
     res.assertStatus(200);
   });
 
   test('should return a 204 status', async ({ client }) => {
-    await TestUtils.db().seed();
-    const res = await client.delete(`${RESOURCE_ROUTE}/1/players/13`);
-    const res2 = await client.delete(`${RESOURCE_ROUTE}/13/players/1`);
+    const game = await GamesService.create();
+    const player = await GamesService.addPlayer(game.uuid, 'player test');
+
+    const res = await client.delete(`${RESOURCE_ROUTE}/${game.uuid}/players/13`);
+    const res2 = await client.delete(`${RESOURCE_ROUTE}/1b14237a-4b00-468f-b11e-da5fb0c14360/players/${player.id}`);
 
     res.assertStatus(204);
     res2.assertStatus(204);
   });
 
   test('should return a 400 status and RESOURCE_NOT_BELONGS_TO error', async ({ client }) => {
-    await TestUtils.db().seed();
-    await client
-      .post(`${RESOURCE_ROUTE}/1/players`)
-      .json({
-        nickname: 'test player',
-      });
-    const res = await client.delete(`${RESOURCE_ROUTE}/2/players/1`);
+    const game = await GamesService.create();
+    const game2 = await GamesService.create();
+    const player = await GamesService.addPlayer(game.uuid, 'player test');
+
+    const res = await client.delete(`${RESOURCE_ROUTE}/${game2.uuid}/players/${player.id}`);
 
     res.assertStatus(400);
     res.assertBody({

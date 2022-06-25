@@ -3,6 +3,8 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import { test } from '@japa/runner';
 import Card from 'App/Models/Card';
 import Game from 'App/Models/Game';
+import DeckService from 'App/Services/DecksService';
+import GamesService from 'App/Services/GamesService';
 
 const { group } = test;
 
@@ -57,27 +59,20 @@ group('endpoint to delete a game', group => {
     return () => Database.rollbackGlobalTransaction();
   });
 
-  test('should return a 200 status', async ({ client }) => {
-    await TestUtils.db().seed();
-    const res = await client.delete(`${RESOURCE_ROUTE}/1`);
+  test('should delete the game from database and return 200 status', async ({ client, assert }) => {
+    const newGame = await GamesService.create();
+    const res = await client.delete(`${RESOURCE_ROUTE}/${newGame.uuid}`);
 
+    const game: Game | null = await Game.find(3);
+
+    assert.isNull(game);
     res.assertStatus(200);
   });
   
   test('should return a 204 status', async ({ client }) => {
-    await TestUtils.db().seed();
-    await client.delete(`${RESOURCE_ROUTE}/1`);
-    const res = await client.delete(`${RESOURCE_ROUTE}/1`);
+    const res = await client.delete(`${RESOURCE_ROUTE}/8ab06991-e943-4a8d-9a5f-49aef124d04e`);
 
     res.assertStatus(204);
-  });
-  
-  test('should delete the game from database', async ({ client, assert }) => {
-    await TestUtils.db().seed();
-    await client.delete(`${RESOURCE_ROUTE}/3`);
-    const game: Game | null = await Game.find(3);
-
-    assert.isNull(game);
   });
 });
 
@@ -88,13 +83,13 @@ group('endpoint to add a deck to a game deck', group => {
   });
 
   test('should persist 52 different cards to the created deck', async ({ client, assert }) => {
-    await TestUtils.db().seed()
-    await client
-      .post(`${RESOURCE_ROUTE}/decks`);
+    const deck = await DeckService.create();
+    const game = await GamesService.create();
+
     const res = await client
-      .post(`${RESOURCE_ROUTE}/1/decks`)
+      .post(`${RESOURCE_ROUTE}/${game.uuid}/decks`)
       .json({
-        deck_id: 1,
+        deck_id: deck.id,
       });
       
     const { cards }: { cards: Card[] } = res.body();
@@ -111,14 +106,16 @@ group('endpoint to add a deck to a game deck', group => {
   });
   
   test('should return a 204 status', async ({ client }) => {
-    await TestUtils.db().seed();
+    const game = await GamesService.create();
+    const deck = await DeckService.create();
+
     const res = await client
-      .post(`${RESOURCE_ROUTE}/12/decks`)
+      .post(`${RESOURCE_ROUTE}/8ab06991-e943-4a8d-9a5f-49aef124d04e/decks`)
       .json({
-        deck_id: 1,
+        deck_id: deck.id,
       });
     const res2 = await client
-      .post(`${RESOURCE_ROUTE}/1/decks`)
+      .post(`${RESOURCE_ROUTE}/${game.uuid}/decks`)
       .json({
         deck_id: 12,
       });
@@ -128,25 +125,29 @@ group('endpoint to add a deck to a game deck', group => {
   });
 
   test('should return a 400 status and an array of errors', async ({ client }) => {
-    await TestUtils.db().seed();
+    const game = await GamesService.create();
+
     const res = await client
-      .post(`${RESOURCE_ROUTE}/1/decks`);
+      .post(`${RESOURCE_ROUTE}/${game.uuid}/decks`);
 
     res.assertStatus(400);
     res.assertBodyContains([{}]);
   });
 
   test('should return a 400 status and RESOURCE_ALREADY_IN_USE error', async ({ client }) => {
-    await TestUtils.db().seed();
+    const game = await GamesService.create();
+    const game2 = await GamesService.create();
+    const deck = await DeckService.create();
+
     await client
-      .post(`${RESOURCE_ROUTE}/1/decks`)
+      .post(`${RESOURCE_ROUTE}/${game.uuid}/decks`)
       .json({
-        deck_id: 1,
+        deck_id: deck.id,
       });
     const res = await client
-      .post(`${RESOURCE_ROUTE}/2/decks`)
+      .post(`${RESOURCE_ROUTE}/${game2.uuid}/decks`)
       .json({
-        deck_id: 1,
+        deck_id: deck.id,
       });
 
     res.assertStatus(400);

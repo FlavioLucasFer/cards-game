@@ -39,13 +39,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/players",
+									"raw": "{{API_ENDPOINT}}/games/{{game_uuid}}/players",
 									"host": [
 										"{{API_ENDPOINT}}"
 									],
 									"path": [
 										"games",
-										"{{game_id}}",
+										"{{game_uuid}}",
 										"players"
 									]
 								}
@@ -58,13 +58,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/players",
+									"raw": "{{API_ENDPOINT}}/games/{{game_uuid}}/players",
 									"host": [
 										"{{API_ENDPOINT}}"
 									],
 									"path": [
 										"games",
-										"{{game_id}}",
+										"{{game_uuid}}",
 										"players"
 									]
 								}
@@ -77,13 +77,13 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/players/{{player_id}}",
+									"raw": "{{API_ENDPOINT}}/games/{{game_uuid}}/players/{{player_id}}",
 									"host": [
 										"{{API_ENDPOINT}}"
 									],
 									"path": [
 										"games",
-										"{{game_id}}",
+										"{{game_uuid}}",
 										"players",
 										"{{player_id}}"
 									]
@@ -111,13 +111,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/decks",
+									"raw": "{{API_ENDPOINT}}/games/{{game_uuid}}/decks",
 									"host": [
 										"{{API_ENDPOINT}}"
 									],
 									"path": [
 										"games",
-										"{{game_id}}",
+										"{{game_uuid}}",
 										"decks"
 									]
 								}
@@ -139,13 +139,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/deal-cards",
+									"raw": "{{API_ENDPOINT}}/games/{{game_uuid}}/deal-cards",
 									"host": [
 										"{{API_ENDPOINT}}"
 									],
 									"path": [
 										"games",
-										"{{game_id}}",
+										"{{game_uuid}}",
 										"deal-cards"
 									]
 								}
@@ -158,13 +158,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/undealt-suits",
+									"raw": "{{API_ENDPOINT}}/games/{{game_uuid}}/undealt-suits",
 									"host": [
 										"{{API_ENDPOINT}}"
 									],
 									"path": [
 										"games",
-										"{{game_id}}",
+										"{{game_uuid}}",
 										"undealt-suits"
 									]
 								}
@@ -177,13 +177,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/undealt-cards",
+									"raw": "{{API_ENDPOINT}}/games/{{game_uuid}}/undealt-cards",
 									"host": [
 										"{{API_ENDPOINT}}"
 									],
 									"path": [
 										"games",
-										"{{game_id}}",
+										"{{game_uuid}}",
 										"undealt-cards"
 									]
 								}
@@ -196,13 +196,13 @@
 								"method": "POST",
 								"header": [],
 								"url": {
-									"raw": "{{API_ENDPOINT}}/games/{{game_id}}/shuffle",
+									"raw": "{{API_ENDPOINT}}/games/{{game_uuid}}/shuffle",
 									"host": [
 										"{{API_ENDPOINT}}"
 									],
 									"path": [
 										"games",
-										"{{game_id}}",
+										"{{game_uuid}}",
 										"shuffle"
 									]
 								}
@@ -218,8 +218,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const { id } = JSON.parse(responseBody);",
-									"pm.environment.set(\"game_id\", id);"
+									"const { uuid } = JSON.parse(responseBody);",
+									"pm.environment.set(\"game_uuid\", uuid);"
 								],
 								"type": "text/javascript"
 							}
@@ -263,13 +263,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{API_ENDPOINT}}/games/{{game_id}}",
+							"raw": "{{API_ENDPOINT}}/games/{{game_uuid}}",
 							"host": [
 								"{{API_ENDPOINT}}"
 							],
 							"path": [
 								"games",
-								"{{game_id}}"
+								"{{game_uuid}}"
 							]
 						}
 					},

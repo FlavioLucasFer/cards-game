@@ -6,10 +6,10 @@ import AddPlayerValidator from 'App/Validators/AddPlayerValidator';
 
 export default class PlayersController {
   public async index({ params, response }: HttpContextContract) {
-    const { game_id: gameId } = params;
+    const { game_uuid: gameUuid } = params;
 
     try {
-      return await GamesService.allPlayers(gameId);
+      return await GamesService.allPlayers(gameUuid);
     } catch (err) {
       if (err?.type) {
         if (err.type === 'RESOURCE_NOT_FOUND')
@@ -28,12 +28,12 @@ export default class PlayersController {
       return response.badRequest(err.messages.errors);
     }
 
-    const { game_id: gameId } = params;
+    const { game_uuid: gameUuid } = params;
     const { nickname }= request.only(['nickname']);
 
     try {
       return response.created(
-        await GamesService.addPlayer(gameId, nickname),
+        await GamesService.addPlayer(gameUuid, nickname),
       );
     } catch (err) {
       if (err?.type) {
@@ -48,12 +48,12 @@ export default class PlayersController {
 
   public async destroy({ params, response }: HttpContextContract) {
     const { 
-      game_id: gameId, 
+      game_uuid: gameUuid, 
       id,
     } = params;
     
     try {
-      return await GamesService.removePlayer(gameId, id);
+      return await GamesService.removePlayer(gameUuid, id);
     } catch (err) {
       if (err?.type) {
         if (err.type === 'RESOURCE_NOT_FOUND')

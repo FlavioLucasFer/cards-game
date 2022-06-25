@@ -1,6 +1,6 @@
 import { resourceAlreadyInUse, resourceNotFound, resourceNotBelongsTo } from 'App/Helpers/expection';
 import Player, { ID as PLAYER_ID } from 'App/Models/Player';
-import Game, { ID as GAME_ID } from 'App/Models/Game';
+import Game from 'App/Models/Game';
 import Deck, { ID as DECK_ID } from 'App/Models/Deck';
 import PlayerService from './PlayerService';
 import Card, { CardFace } from 'App/Models/Card';
@@ -12,8 +12,12 @@ export default class GamesService {
         return Game.all();
     }
 
-    public static async find(id: GAME_ID): Promise<Game|null> {
-        return Game.find(id);
+    public static async find(gameUuid: string): Promise<Game|null> {
+        return Game.findBy('uuid', gameUuid);
+    }
+
+    public static async findOrFail(gameUuid: string): Promise<Game> {
+        return Game.findByOrFail('uuid', gameUuid);
     }
 
     public static create(): Promise<Game> {
@@ -21,11 +25,11 @@ export default class GamesService {
         return game.save();
     }
     
-    public static async delete(id: GAME_ID) {
+    public static async delete(gameUuid: string) {
         let game: Game;
         
         try {
-            game = await Game.findOrFail(id);
+            game = await this.findOrFail(gameUuid);
         } catch (err) {
             throw resourceNotFound();
         }
@@ -38,12 +42,12 @@ export default class GamesService {
         }
     }
 
-    public static async addDeck(gameId: GAME_ID, deckId: DECK_ID): Promise<Deck> {
+    public static async addDeck(gameUuid: string, deckId: DECK_ID): Promise<Deck> {
         let game: Game;
         let deck: Deck;
         
         try {
-            game = await Game.findOrFail(gameId);
+            game = await this.findOrFail(gameUuid);
             deck = await Deck.findOrFail(deckId);
         } catch (err) {
             throw resourceNotFound();
@@ -64,7 +68,7 @@ export default class GamesService {
             await Database.transaction(async trx => {
                 deck.useTransaction(trx);
 
-                deck.gameId = gameId;
+                deck.gameId = game.id;
                 await deck.save();
 
                 await deck
@@ -86,11 +90,11 @@ export default class GamesService {
             .firstOrFail();
     }
 
-    public static async allPlayers(gameId: GAME_ID) {
+    public static async allPlayers(gameUuid: string) {
         let game: Game;
 
         try {
-            game = await Game.findOrFail(gameId);
+            game = await this.findOrFail(gameUuid);
         } catch (err) {
             throw resourceNotFound();
         }
@@ -125,27 +129,29 @@ export default class GamesService {
         return mutatedPlayers;
     }
 
-    public static async addPlayer(gameId: GAME_ID, nickname: string): Promise<Player> {
+    public static async addPlayer(gameUuid: string, nickname: string): Promise<Player> {
+        let game: Game;
+        
         try {
-            await Game.findOrFail(gameId);
+            game = await this.findOrFail(gameUuid);
         } catch (err) {
             throw resourceNotFound();
         }
         
         const player = new Player();
 
-        player.gameId = gameId;
+        player.gameId = game.id;
         player.nickname = nickname;
 
         return player.save();
     }
 
-    public static async removePlayer(gameId: GAME_ID, playerId: PLAYER_ID): Promise<void> {
+    public static async removePlayer(gameUuid: string, playerId: PLAYER_ID): Promise<void> {
         let game: Game;
         let player: Player;
 
         try {
-            game = await Game.findOrFail(gameId);
+            game = await this.findOrFail(gameUuid);
             player = await Player.findOrFail(playerId);
         } catch (err) {
             throw resourceNotFound();
@@ -162,7 +168,7 @@ export default class GamesService {
     }
 
     public static async dealCards(
-        gameId: GAME_ID,
+        gameUuid: string,
         playerId: PLAYER_ID,
         quantity: number = 1
     ): Promise<Card[]> {
@@ -170,7 +176,7 @@ export default class GamesService {
         let player: Player;
 
         try {
-            game = await Game.findOrFail(gameId);
+            game = await this.findOrFail(gameUuid);
             player = await Player.findOrFail(playerId);
         } catch (err) {
             throw resourceNotFound();
@@ -185,7 +191,7 @@ export default class GamesService {
                 .select(['cards.*'])
                 .innerJoin('decks AS dk', 'dk.id', 'cards.deck_id')
                 .innerJoin('games AS g', 'g.id', 'dk.game_id')
-                .where('g.id', gameId)
+                .where('g.id', game.id)
                 .andWhereNull('cards.player_id')
                 .orderBy('cards.index')
                 .limit(quantity);
@@ -204,9 +210,11 @@ export default class GamesService {
         }
     }
 
-    public static async getUndealtSuitsCount(gameId: GAME_ID): Promise<Object> {
+    public static async getUndealtSuitsCount(gameUuid: string): Promise<Object> {
+        let game: Game;
+        
         try {
-            await Game.findOrFail(gameId);
+            game = await this.findOrFail(gameUuid);
         } catch (err) {
             throw resourceNotFound();
         }
@@ -231,7 +239,7 @@ export default class GamesService {
                 ])
                 .innerJoin('decks AS dk', 'dk.id', 'cards.deck_id')
                 .innerJoin('games AS g', 'g.id', 'dk.game_id')
-                .where('g.id', gameId)
+                .where('g.id', game.id)
                 .whereNull('cards.player_id');
             
             return suits[0].$extras;
@@ -240,9 +248,11 @@ export default class GamesService {
         }
     }
 
-    public static async getUndealtCardsCount(gameId: GAME_ID) {
+    public static async getUndealtCardsCount(gameUuid: string) {
+        let game: Game;
+
         try {
-            await Game.findOrFail(gameId);
+            game = await this.findOrFail(gameUuid);
         } catch (err) {
             throw resourceNotFound();
         }
@@ -265,7 +275,7 @@ export default class GamesService {
                 ])
                 .innerJoin('decks AS dk', 'dk.id', 'c.deck_id')
                 .innerJoin('games AS g', 'g.id', 'dk.game_id')
-                .where('g.id', gameId)
+                .where('g.id', game.id)
                 .groupBy('c.face')
                 .groupBy('c.suit')
                 .orderByRaw(`
@@ -282,9 +292,11 @@ export default class GamesService {
         }
     }
 
-    public static async shuffle(gameId: GAME_ID) {
+    public static async shuffle(gameUuid: string) {
+        let game: Game;
+
         try {
-            await Game.findOrFail(gameId);
+            game = await this.findOrFail(gameUuid);
         } catch (err) {
             throw resourceNotFound();
         }
@@ -294,14 +306,11 @@ export default class GamesService {
             .select(['cards.*'])
             .innerJoin('decks AS dk', 'dk.id', 'cards.deck_id')
             .innerJoin('games AS g', 'g.id', 'dk.game_id')
-            .where('g.id', gameId)
+            .where('g.id', game.id)
             .whereNull('cards.player_id');
 
         if (cards.length === 0)
             throw resourceNotFound();
-
-        console.log('cards:', cards);
-        
 
         const maxIndex = cards.length - 1;
 

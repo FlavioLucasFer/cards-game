@@ -10,39 +10,44 @@ Route
         
         Route
           .resource('/games', 'GamesController')
-          .where('id', Route.matchers.number())
-          .apiOnly();
+          .paramFor('games', 'uuid')
+          .where('uuid', Route.matchers.uuid())
+          .apiOnly()
+          .except(['update']);
 
         Route
           .resource('/decks', 'DecksController')
           .where('id', Route.matchers.number())
-          .apiOnly();
+          .apiOnly()
+          .only(['store']);
           
         Route
           .resource('games.players', 'PlayersController')
-          .where('game_id', Route.matchers.number())
+          .paramFor('games', 'game_uuid')
+          .where('game_uuid', Route.matchers.uuid())
           .where('id', Route.matchers.number())
-          .apiOnly();
+          .apiOnly()
+          .except(['update']);
         
         Route
-          .post('/games/:game_id/decks', 'GamesController.addDeck')
-          .where('game_id', Route.matchers.number());
+          .post('/games/:game_uuid/decks', 'GamesController.addDeck')
+          .where('game_uuid', Route.matchers.uuid());
           
         Route
-          .post('/games/:game_id/deal-cards', 'GamesController.dealCards')
-          .where('game_id', Route.matchers.number());
+          .post('/games/:game_uuid/deal-cards', 'GamesController.dealCards')
+          .where('game_uuid', Route.matchers.uuid());
 
         Route
-          .get('/games/:game_id/undealt-suits', 'GamesController.getUndealtSuitsCount')
-          .where('game_id', Route.matchers.number());
+          .get('/games/:game_uuid/undealt-suits', 'GamesController.getUndealtSuitsCount')
+          .where('game_uuid', Route.matchers.uuid());
         
         Route
-          .get('/games/:game_id/undealt-cards', 'GamesController.getUndealtCardsCount')
-          .where('game_id', Route.matchers.number());
+          .get('/games/:game_uuid/undealt-cards', 'GamesController.getUndealtCardsCount')
+          .where('game_uuid', Route.matchers.uuid());
         
         Route
-          .post('/games/:game_id/shuffle', 'GamesController.shuffle')
-          .where('game_id', Route.matchers.number());
+          .post('/games/:game_uuid/shuffle', 'GamesController.shuffle')
+          .where('game_uuid', Route.matchers.uuid());
 
         Route
           .get('/players/:id/cards', 'PlayersController.getCards')

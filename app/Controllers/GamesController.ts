@@ -26,10 +26,10 @@ export default class GamesController {
   }
 
   public async destroy({ params, response }: HttpContextContract) {
-    const { id } = params;
+    const { uuid } = params;
 
     try {
-      await GamesService.delete(id);
+      await GamesService.delete(uuid);
       return response.status(200);
     } catch (err) {
       if (err?.type) {
@@ -49,11 +49,11 @@ export default class GamesController {
       return response.badRequest(err.messages.errors);
     }
 
-    const { game_id: gameId } = params;
+    const { game_uuid: gameUuid } = params;
     const { deck_id: deckId } = request.only(['deck_id']);
 
     try {
-      return await GamesService.addDeck(gameId, deckId);
+      return await GamesService.addDeck(gameUuid, deckId);
     } catch (err: any) {
       if (err?.type) {
         if (err.type === 'RESOURCE_NOT_FOUND')
@@ -74,14 +74,14 @@ export default class GamesController {
       return response.badRequest(err.messages.errors);
     }
 
-    const { game_id: gameId } = params;
+    const { game_uuid: gameUuid } = params;
     const { 
       player_id: playerId,
       quantity,
     } = request.only(['player_id', 'quantity']);
 
     try {
-      return await GamesService.dealCards(gameId, playerId, quantity || 1);
+      return await GamesService.dealCards(gameUuid, playerId, quantity || 1);
     } catch (err) {
       if (err?.type) {
         if (err.type === 'RESOURCE_NOT_FOUND')
@@ -96,10 +96,10 @@ export default class GamesController {
   }
 
   public async getUndealtSuitsCount({ params, response }: HttpContextContract) {
-    const { game_id: gameId } = params;
+    const { game_uuid: gameUuid } = params;
 
     try {
-      return await GamesService.getUndealtSuitsCount(gameId);
+      return await GamesService.getUndealtSuitsCount(gameUuid);
     } catch (err) {
       if (err?.type) {
         if (err.type === 'RESOURCE_NOT_FOUND')
@@ -112,10 +112,10 @@ export default class GamesController {
   }
 
   public async getUndealtCardsCount({ params, response }: HttpContextContract) {
-    const { game_id: gameId } = params;
+    const { game_uuid: gameUuid } = params;
 
     try {
-      return await GamesService.getUndealtCardsCount(gameId);
+      return await GamesService.getUndealtCardsCount(gameUuid);
     } catch (err) {
       if (err?.type) {
         if (err.type === 'RESOURCE_NOT_FOUND')
@@ -128,10 +128,10 @@ export default class GamesController {
   }
 
   public async shuffle({ params, response }: HttpContextContract) {
-    const { game_id: gameId } = params;
+    const { game_uuid: gameUuid } = params;
 
     try {
-      return await GamesService.shuffle(gameId);
+      return await GamesService.shuffle(gameUuid);
     } catch (err) {
       if (err?.type) {
         if (err.type === 'RESOURCE_NOT_FOUND')
