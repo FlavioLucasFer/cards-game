@@ -31,7 +31,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"nickname\": \"Test player 2\"\n}",
+									"raw": "{\n    \"nickname\": \"Player test\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"

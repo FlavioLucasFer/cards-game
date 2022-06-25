@@ -25,6 +25,22 @@ export default class GamesController {
     }
   }
 
+  public async show({ params, response }: HttpContextContract) {
+    const { uuid } = params;
+    
+    try {
+      const game = await GamesService.find(uuid);
+
+      if (!game)
+        return response.noContent();
+
+      return game;
+    } catch (err) {
+      Logger.error(err);
+      return response.internalServerError();
+    }
+  }
+
   public async destroy({ params, response }: HttpContextContract) {
     const { uuid } = params;
 

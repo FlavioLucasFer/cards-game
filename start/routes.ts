@@ -27,7 +27,7 @@ Route
           .where('game_uuid', Route.matchers.uuid())
           .where('id', Route.matchers.number())
           .apiOnly()
-          .except(['update']);
+          .except(['update', 'show']);
         
         Route
           .post('/games/:game_uuid/decks', 'GamesController.addDeck')
