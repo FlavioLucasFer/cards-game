@@ -31,7 +31,16 @@ export default class Game extends BaseModel {
   public players: HasMany<typeof Player>;
 
   @beforeCreate()
-  protected static generateUuid(game: Game) {
-    game._uuid = uuidv4();
+  protected static async generateUuid(game: Game) {
+    let uuid: string;
+
+    do {
+      uuid = uuidv4();
+
+      if (!await Game.findBy('uuid', uuid))
+        break;
+    } while(true);
+
+    game._uuid = uuid;
   }
 }
