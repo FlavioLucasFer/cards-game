@@ -3,7 +3,8 @@
 ## About the project
 
 <p>
-    This a RESTful API built-in with [AdonisJs](https://adonisjs.com/) v5.8.0 in TypeScript environment. This is an API of a Cards Game. This project was developed as a homework assignment  for a job opportunity.
+    This a RESTful API built-in with 
+    <a href="https://adonisjs.com/" target="_blank">AdonisJs</a> v5.8.0 in TypeScript environment. This is an API of a Cards Game. This project was developed as a homework assignment  for a job opportunity. There is also a front-end that consumes this API. The front-end is avaliable on: <a href="https://github.com/FlavioLucasFer/cards-game-front" target="_blank">https://github.com/FlavioLucasFer/cards-game-front</a>
 </p>
 
 # Running the app
@@ -26,6 +27,12 @@ If you want to install *yarn* globally, then type:
     npm i yarn -g
 
 If you already have *yarn* installed, go ahead.
+
+Now, to install the dependencies, type:
+
+    yarn i 
+
+if some problem occurs with *yarn i* try *npm i* instead.
 
 <small>
     <b>note</b>: if you don't want to install *yarn* anyway, you can trade most of the command by the refferent *node ace* command. You can read about the *node ace* commands on the docs of AdonisJs or just copy them from *package.json*.
@@ -52,6 +59,10 @@ The only thing you need to do is migrate the database. To do that, just type in 
     yarn migrate
 
 Now... ENJOY!
+
+## SQLITE_CANTOPEN: unable to open database file
+
+If this error occurs to you, create at the root of the project a folder named *tmp*. AdonisJs needs this folder to create the database as a temporary file. If this problem not have been occurred, just go ahead.
 
 ## Other usefull commands
 
@@ -85,16 +96,18 @@ Some peace of code is placed outside the *app* dir. These is the case of the mig
 
 # Features
 
-Follows, there are all the API endpoints (routes) that represent features.
+## Postman Collection and Environment
 
-<b>Note:</b> There is an exported postman collection (*cards-game.postman_collection.json*) with all the endpoints properly separed by folders and with an environment (*cards-game.postman_environment.json*) set for dev. Both of files can be find at the root os the project.
+There is an exported postman collection (*cards_game.postman_collection.json*) with all the endpoints properly separed by folders and with an environment (*cards_game.postman_environment.json*) set for dev. Both of files can be find at the root os the project.
 
 ## Endpoints
+
+Follows, there are all the API endpoints (routes) that represent features.
 
 <b> Create and delete a game </b>
 
     [POST]   http://localhost:3333/api/v1/games
-    [DELETE] http://localhost:3333/api/v1/games/:game_id
+    [DELETE] http://localhost:3333/api/v1/games/:game_uuid
 
 <b> Create a deck </b>
 
@@ -102,19 +115,19 @@ Follows, there are all the API endpoints (routes) that represent features.
 
 <b> Add a deck to the game deck </b>
 
-    [POST]   http://localhost:3333/api/v1/games/:game_id/decks
+    [POST]   http://localhost:3333/api/v1/games/:game_uuid/decks
     body: { deck_id: number }
 
 <b> Get, add and remove players from a game </b>
 
-    [GET] http://localhost:3333/api/v1/games/:game_id/players
-    [POST] http://localhost:3333/api/v1/games/:game_id/players
+    [GET] http://localhost:3333/api/v1/games/:game_uuid/players
+    [POST] http://localhost:3333/api/v1/games/:game_uuid/players
     body: { nickname: string }
-    [DELETE] http://localhost:3333/api/v1/games/:game_id/players/:player_id
+    [DELETE] http://localhost:3333/api/v1/games/:game_uuid/players/:player_id
 
 <b> Deal cards to a player in a game from the game deck </b>
 
-    [POST] http://localhost:3333/api/v1/games/:game_id/deal-cards
+    [POST] http://localhost:3333/api/v1/games/:game_uuid/deal-cards
     body: { player_id: number, (opt) quantity: number }
 
 <b> Get the list of cards for a player </b>
@@ -123,13 +136,21 @@ Follows, there are all the API endpoints (routes) that represent features.
 
 <b> Get the count of how many cards per suit are left undealt in the game deck </b>
 
-    [GET] http://localhost:3333/api/v1/games/:game_id/undealt-suits
+    [GET] http://localhost:3333/api/v1/games/:game_uuid/undealt-suits
 
 <b> Get the count of each card remaining in the game deck sorted by suit (
 hearts, spades, clubs, and diamonds) and face value from high value to low value </b>
 
-    [GET] http://localhost:3333/api/v1/games/:game_id/undealt-cards
+    [GET] http://localhost:3333/api/v1/games/:game_uuid/undealt-cards
 
 <b> Shuffle the game deck (shoe) </b>
 
-    [POST] http://localhost:3333/api/v1/games/:game_id/shuffle
+    [POST] http://localhost:3333/api/v1/games/:game_uuid/shuffle
+
+# Know limitations
+
+ - Local storage database
+ - Lack of concurrency control
+ - Only integration tests
+ - Missing tests to some endpoints
+ - Bad implementation of error reports and exception handling
