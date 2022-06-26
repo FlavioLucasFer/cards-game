@@ -2,8 +2,7 @@ import { resourceAlreadyInUse, resourceNotFound, resourceNotBelongsTo } from 'Ap
 import Player, { ID as PLAYER_ID } from 'App/Models/Player';
 import Game from 'App/Models/Game';
 import Deck, { ID as DECK_ID } from 'App/Models/Deck';
-import PlayerService from './PlayerService';
-import Card, { CardFace } from 'App/Models/Card';
+import Card from 'App/Models/Card';
 import Database from '@ioc:Adonis/Lucid/Database';
 import DeckService from './DecksService';
 
@@ -91,42 +90,31 @@ export default class GamesService {
     }
 
     public static async allPlayers(gameUuid: string) {
-        let game: Game;
-
         try {
-            game = await this.findOrFail(gameUuid);
+            await this.findOrFail(gameUuid);
         } catch (err) {
             throw resourceNotFound();
         }
 
-        const players: Player[] = await game
-            .related('players')
-            .query();
-
-        const mutatedPlayers = await Promise.all(
-            players.map(async player => {
-                const mutated = {
-                    ...player.toJSON(),
-                    hand_value: 0,
-                };
-                
-                const cards = await PlayerService.getCards(player.id);
-                
-                if (cards && cards.length > 0)
-                    mutated.hand_value = await cards
-                        .map(card => CardFace[card.face])
-                        .reduce((prev, next) => prev + next);
-                else
-                    mutated.hand_value = 0;
-                    
-                return mutated;
-            })
-            ,
-        );
-
-        mutatedPlayers.sort((a, b) => b.hand_value - a.hand_value);
-
-        return mutatedPlayers;
+        return await Database
+            .from('players AS p')
+            .select([
+                'p.*',
+                Database.raw(`
+                    (
+                        SELECT 
+                            CASE
+                                WHEN SUM(c.face_value) THEN SUM(c.face_value)
+                                ELSE 0
+                            END
+                        FROM cards AS c
+                        WHERE c.player_id = p.id
+                    ) as hand_value
+                `)
+            ])
+            .innerJoin('games AS g', 'g.id', 'p.game_id')
+            .where('g.uuid', gameUuid)
+            .orderBy('hand_value', 'desc');
     }
 
     public static async addPlayer(gameUuid: string, nickname: string): Promise<Player> {
