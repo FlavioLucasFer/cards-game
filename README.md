@@ -20,19 +20,19 @@
 
 You need the *yarn* package manager to run the projects commands, so, to install *yarn* type on the root of the project:
 
-    npm i yarn
+    npm install yarn
 
 If you want to install *yarn* globally, then type:
 
-    npm i yarn -g
+    npm install yarn -g
 
 If you already have *yarn* installed, go ahead.
 
 Now, to install the dependencies, type:
 
-    yarn i 
+    yarn install 
 
-if some problem occurs with *yarn i* try *npm i* instead.
+if some problem occurs with *yarn install* try *npm install* instead.
 
 <small>
     <b>note</b>: if you don't want to install *yarn* anyway, you can trade most of the command by the refferent *node ace* command. You can read about the *node ace* commands on the docs of AdonisJs or just copy them from *package.json*.
