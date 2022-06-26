@@ -147,7 +147,7 @@ hearts, spades, clubs, and diamonds) and face value from high value to low value
 
     [POST] http://localhost:3333/api/v1/games/:game_uuid/shuffle
 
-# Know limitations
+# Known limitations
 
  - Local storage database
  - Lack of concurrency control
