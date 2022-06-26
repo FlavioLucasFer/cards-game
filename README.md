@@ -3,8 +3,8 @@
 ## About the project
 
 <p>
-    This a RESTful API built-in with 
-    <a href="https://adonisjs.com/" target="_blank">AdonisJs</a> v5.8.0 in TypeScript environment. This is an API of a Cards Game. This project was developed as a homework assignment for a job opportunity. There is also a front-end that consumes this API. The front-end is available on: <a href="https://github.com/FlavioLucasFer/cards-game-front" target="_blank">https://github.com/FlavioLucasFer/cards-game-front</a>
+    This is a RESTful API built-in with 
+    <a href="https://adonisjs.com/" target="_blank">AdonisJs</a> v5.8.0 in the TypeScript environment. This is an API of a Cards Game. This project was developed as a homework assignment for a job opportunity. There is also a front-end that consumes this API. The front-end is available on: <a href="https://github.com/FlavioLucasFer/cards-game-front" target="_blank">https://github.com/FlavioLucasFer/cards-game-front</a>
 </p>
 
 # Running the app
